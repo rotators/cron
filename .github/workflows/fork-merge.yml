@@ -1,0 +1,48 @@
+#
+# TODO this should be made into legit action some day if we want to mirror more repos...
+#      ... but we'd have to use js <thunder.wav> ...
+#      ...or wait when/if https://github.community/t5/GitHub-Actions/Feature-request-Shell-script-as-type-of-action/m-p/30671#M506 is added
+#
+# - uses: rotators/gha-fork/merge@???
+#   with:
+#    upstream: https://github.com/phobos2077/sfall.git
+#    fork:     rotators/sfall
+#    branches: [master, develop, 3.8-maintenance]
+#    user:     antalaskaya
+#    token:    ${{ secrets.ANTALASKAYA_TOKEN }}
+#
+
+name: Fork Merge
+
+on:
+ schedule:
+ - cron: 0 * * * *
+
+jobs:
+
+ sfall:
+  runs-on: ubuntu-latest
+  strategy:
+   max-parallel: 1
+   matrix:
+    branch: [master, develop, 3.8-maintenance]
+
+  steps:
+  - name: clone
+    run:  git clone --branch=${{ matrix.branch }} https://antalaskaya:$ANTALASKAYA_TOKEN@github.com/rotators/sfall.git . && pwd && ls
+    env:
+     ANTALASKAYA_TOKEN: ${{ secrets.ANTALASKAYA_TOKEN }}
+
+  - name: add remote
+    run:  git remote add upstream https://github.com/phobos2077/sfall.git
+
+  - name: synch
+    run:  git fetch upstream
+
+  - name: merge
+    run:  git merge --no-edit upstream/${{ matrix.branch }}
+
+  - name: push
+    run:  |
+          git push origin ${{ matrix.branch }}
+          git push --tags

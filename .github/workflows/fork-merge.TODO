@@ -1,0 +1,54 @@
+ ###
+ # UNUSED (no idea how to install dx10 properly)
+
+ sfall-build:
+  runs-on: windows-2016
+  needs: sfall
+  strategy:
+   max-parallel: 1
+   matrix:
+    branch:        [master, develop, 3.8-maintenance]
+    configuration: [Release, ReleaseXP, DevXP]
+    exclude:
+    - branch:        master
+      configuration: Release
+    - branch:        develop
+      configuration: Release
+    - branch:        3.8-maintenance
+      configuration: ReleaseXP
+    - branch:        3.8-maintenance
+      configuration: DevXP
+
+  steps:
+  - name: clone
+    run:  git clone --branch=${{ matrix.branch }} https://github.com/rotators/sfall.git . && pwd && ls
+
+  - name: download dx10
+    run:  curl -L "https://download.microsoft.com/download/A/E/7/AE743F1F-632B-4809-87A9-AA1BB3458E31/DXSDK_Jun10.exe" -o __DXSDK_Jun10.exe
+
+# - name: install dx10
+#   run:  __DXSDK_Jun10.exe /F /S /O /U
+
+  - name: install dx10
+    run:  __DXSDK_Jun10.exe /F /U
+    continue-on-error: true
+
+  - name: download dx7
+    run:  curl -L "https://download.microsoft.com/download/3/3/f/33f1af6e-c61b-4f14-a0de-3e9096ed4b3a/DXSDK_Aug2007.exe" -o __DXSDK_Aug07.exe
+
+  - name:  extract dx7
+    run:   |
+           7z x __DXSDK_Aug07.exe -o__DX2007
+           7z x __DX2007/DXSDK_Aug2007.exe -o__DX2007
+           mkdir __dx7
+           cp __DX2007/Lib/x86/dinput.lib __dx7
+           ls __dx7
+
+  - name:  patch .vcxproj
+    run:   cat sfall/ddraw.vcxproj | sed -re 's/\$\(LibraryPath\)/$(GITHUB_WORKSPACE)\\__dx7;&/' > __ddraw_vcxproj && mv __ddraw_vcxproj sfall/ddraw.vcxproj
+    shell: bash
+
+  - uses: warrenbuckley/Setup-MSBuild@v1
+
+  - name: build
+    run:  msbuild /p:Configuration=${{ matrix.configuration }} /p:Platform=Win32 sfall/ddraw.sln
