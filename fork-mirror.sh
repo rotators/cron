@@ -66,7 +66,7 @@ if [ -n "${fork}" ]; then
 		echo ::endgroup::
 	else
 		echo ::group::Configure fork
-		git remote add fork https://github.com/${fork}
+		git remote add fork ${fork}
 		cat config
 		echo ::endgroup::
 	fi
