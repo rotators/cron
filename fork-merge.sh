@@ -37,7 +37,7 @@ fi
 # TODO custom directory
 fork_dir="$HOME/fork"
 
-echo "${upstream} -[${branches[@]}]-> ${fork}"
+echo "Merge ${upstream} -[${branches[@]}]-> ${fork}"
 
 for branch in ${branches[@]}; do
 	echo ::group::Clone branch $branch
