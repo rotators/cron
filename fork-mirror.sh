@@ -30,7 +30,7 @@ fork_dir="$HOME/fork"
 
 echo ::group::Clone upstream
 rm -fR ${fork_dir}
-git clone --mirror "${upstream}" "${fork_dir}" && cd "${fork_dir}"
+git clone --mirror "${upstream}" "${fork_dir}" 2>&1 && cd "${fork_dir}"
 echo ::endgroup::
 
 echo ::group::Configure upstream

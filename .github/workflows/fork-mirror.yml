@@ -23,7 +23,6 @@ jobs:
 
  fonline-historical-stuff:
   runs-on: ubuntu-latest
-  needs: fonline
 
   steps:
   - uses: actions/checkout@master
