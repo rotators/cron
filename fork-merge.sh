@@ -9,6 +9,7 @@
 #    upstream:   https://github.com/phobos2077/sfall.git
 #    fork:       https://github.com/rotators/sfall.git
 #    branches:   [master, develop, 3.8-maintenance]
+#    mirror:     true
 #    auth:       ${{ secrets.TOKEN }}
 
 set -e
@@ -22,6 +23,8 @@ upstream=$1
 fork=$2
 auth=$3
 branches=${@:4}
+
+mirror=1
 
 if [ -z "${upstream}" ]; then
 	echo "Missing <upstream>"
@@ -41,26 +44,46 @@ echo "Merge ${upstream} -[${branches[@]}]-> ${fork}"
 
 for branch in ${branches[@]}; do
 	echo ::group::Clone branch $branch
-	rm -fR "${fork_dir}-${branch}"
+
+	cd /
+	branch_dir="${fork_dir}-${branch}"
+	rm -fR "${branch_dir}"
+
 	if [ -n "${auth}" ]; then
-		git clone --branch=${branch} $(echo "${fork}" | sed -re "s|^([a-z]+)://|\1://${auth}@|") "${fork_dir}-${branch}" #"
+		git clone --branch=${branch} $(echo "${fork}" | sed -re "s|^([a-z]+)://|\1://${auth}@|") "${branch_dir}" #"
 	else
-		git clone --branch=${branch} ${fork} "${fork_dir}-${branch}"
+		git clone --branch=${branch} ${fork} "${branch_dir}"
 	fi
-	cd "${fork_dir}-${branch}"
+	cd "${branch_dir}"
 	echo ::endgroup::
 
-	echo ::group::Configure upstream
+	echo ::group::Configure upstreamx
 	git remote add upstream ${upstream}
 	echo ::endgroup::
 
 	echo ::group::Synch
 	git fetch upstream
+	git checkout ${branch}
 	echo ::endgroup::
 
 	echo ::group::Merge branch $branch
 	git merge --no-edit upstream/${branch}
 	echo ::endgroup::
+
+	if [ "${mirror}" -gt 0 ]; then
+		hash_origin=`git log -n 1 --pretty=format:"%H" ${branch}`
+		hash_upstream=`git log -n 1 --pretty=format:"%H" upstream/${branch}`
+
+		if [ "${hash_origin}" != "${hash_upstream}" ]; then
+			for log in ${branch} upstream/${branch}; do
+				echo ::group::git log ${log}
+				git --no-pager log -n 2 ${log}
+				echo ::endgroup::
+			done
+			echo Bad merge
+			exit 1
+		fi
+	fi
 
 	if [ -n "${auth}" ]; then
 		echo ::group::Push branch $branch
@@ -68,4 +91,7 @@ for branch in ${branches[@]}; do
 		git push --tags
 		echo ::endgroup::
 	fi
+
+	rm -fR "${branch_dir}"
+	cd /
 done
