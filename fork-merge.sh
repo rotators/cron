@@ -57,9 +57,7 @@ for branch in ${branches[@]}; do
 	cd "${branch_dir}"
 	echo ::endgroup::
 
-	echo ::group::Configure upstreamx
 	git remote add upstream ${upstream}
-	echo ::endgroup::
 
 	echo ::group::Synch
 	git fetch upstream
@@ -70,18 +68,22 @@ for branch in ${branches[@]}; do
 	git merge --no-edit upstream/${branch}
 	echo ::endgroup::
 
+	reset=0
 	if [ "${mirror}" -gt 0 ]; then
 		hash_origin=`git log -n 1 --pretty=format:"%H" ${branch}`
 		hash_upstream=`git log -n 1 --pretty=format:"%H" upstream/${branch}`
 
 		if [ "${hash_origin}" != "${hash_upstream}" ]; then
+			echo Bad merge
 			for log in ${branch} upstream/${branch}; do
 				echo ::group::git log ${log}
 				git --no-pager log -n 2 ${log}
 				echo ::endgroup::
 			done
-			echo Bad merge
-			exit 1
+			echo ::group::Reset branch $branch
+			reset=1
+			git reset --hard upstream/${branch}
+			echo ::endgroup::
 		fi
 	fi
 
