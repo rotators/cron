@@ -65,7 +65,7 @@ for branch in ${branches[@]}; do
 	echo ::endgroup::
 
 	echo ::group::Merge branch $branch
-	git merge --no-edit upstream/${branch}
+	git merge --no-edit upstream/${branch} || true
 	echo ::endgroup::
 
 	reset=0
