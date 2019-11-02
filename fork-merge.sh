@@ -65,7 +65,7 @@ for branch in ${branches[@]}; do
 	echo ::endgroup::
 
 	echo ::group::Merge branch $branch
-	git merge --no-edit upstream/${branch} || true
+	git merge --no-edit upstream/${branch} 2>&1 || true
 	echo ::endgroup::
 
 	reset=0
@@ -88,10 +88,17 @@ for branch in ${branches[@]}; do
 	fi
 
 	if [ -n "${auth}" ]; then
-		echo ::group::Push branch $branch
-		git push origin ${branch}
-		git push --tags
-		echo ::endgroup::
+		if [ $reset -eq 0 ]; then
+			echo ::group::Push branch $branch
+			git push origin ${branch}
+			git push --tags
+			echo ::endgroup::
+		else
+			echo ::group::Force push branch $branch
+			git push --force origin ${branch}
+			git push --tags
+			echo ::endgroup::
+		fi
 	fi
 
 	rm -fR "${branch_dir}"
