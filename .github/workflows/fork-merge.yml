@@ -15,6 +15,6 @@ jobs:
      fetch-depth: 1
 
   - name: Fork Merge
-    run:  ./fork-merge.sh "https://github.com/phobos2077/sfall.git" "https://github.com/rotators/sfall.git" "$ANTALASKAYA_TOKEN" master develop 3.8-maintenance
+    run:  ./fork-merge.sh "https://github.com/phobos2077/sfall.git" "https://github.com/rotators/sfall.git" "$ANTALASKAYA_TOKEN" master develop
     env:
      ANTALASKAYA_TOKEN: ${{ secrets.ANTALASKAYA_TOKEN }}
