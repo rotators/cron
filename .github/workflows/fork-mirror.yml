@@ -10,12 +10,21 @@ jobs:
   runs-on: ubuntu-latest
 
   steps:
-  - uses: actions/checkout@master
-    with:
-     fetch-depth: 1
-
+  - uses: actions/checkout@v2
   - name: Fork Mirror
     run:  ./fork-mirror.sh "https://github.com/cvet/fonline.git" "https://github.com/rotators/fonline.git" "$ANTALASKAYA_TOKEN"
+    env:
+     ANTALASKAYA_TOKEN: ${{ secrets.ANTALASKAYA_TOKEN }}
+
+ ###
+
+ fonline-the-game:
+  runs-on: ubuntu-latest
+
+  steps:
+  - uses: actions/checkout@v2
+  - name: Fork Mirror
+    run:  ./fork-mirror.sh "https://github.com/cvet/fonline-the-game.git" "https://github.com/rotators/fonline-the-game.git" "$ANTALASKAYA_TOKEN"
     env:
      ANTALASKAYA_TOKEN: ${{ secrets.ANTALASKAYA_TOKEN }}
 
@@ -25,10 +34,7 @@ jobs:
   runs-on: ubuntu-latest
 
   steps:
-  - uses: actions/checkout@master
-    with:
-     fetch-depth: 1
-
+  - uses: actions/checkout@v2
   - name: Fork Mirror
     run:  ./fork-mirror.sh "https://github.com/cvet/fonline-historical-stuff.git" "https://github.com/rotators/fonline-historical-stuff.git" "$ANTALASKAYA_TOKEN"
     env:

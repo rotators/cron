@@ -10,10 +10,7 @@ jobs:
   runs-on: ubuntu-latest
 
   steps:
-  - uses: actions/checkout@master
-    with:
-     fetch-depth: 1
-
+  - uses: actions/checkout@v2
   - name: Fork Merge
     run:  ./fork-merge.sh "https://github.com/phobos2077/sfall.git" "https://github.com/rotators/sfall.git" "$ANTALASKAYA_TOKEN" master develop
     env:
