@@ -18,15 +18,15 @@ jobs:
 
  ###
 
- fonline-the-game:
-  runs-on: ubuntu-latest
-
-  steps:
-  - uses: actions/checkout@v2
-  - name: Fork Mirror
-    run:  ./fork-mirror.sh "https://github.com/cvet/fonline-the-game.git" "https://github.com/rotators/fonline-the-game.git" "$ANTALASKAYA_TOKEN"
-    env:
-     ANTALASKAYA_TOKEN: ${{ secrets.ANTALASKAYA_TOKEN }}
+#fonline-the-game:
+# runs-on: ubuntu-latest
+#
+# steps:
+# - uses: actions/checkout@v2
+# - name: Fork Mirror
+#   run:  ./fork-mirror.sh "https://github.com/cvet/fonline-the-game.git" "https://github.com/rotators/fonline-the-game.git" "$ANTALASKAYA_TOKEN"
+#   env:
+#    ANTALASKAYA_TOKEN: ${{ secrets.ANTALASKAYA_TOKEN }}
 
  ###
 
